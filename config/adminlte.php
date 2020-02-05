@@ -108,11 +108,16 @@ return [
     */
 
     'menu' => [
-        'MAIN NAVIGATION',
+        'SETTING KAMAR',
         [
-            'text' => 'Blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
+            'text' => 'Fasilitas',
+            'url'  => 'admin/facility',
+            'icon' => 'tasks',
+        ],
+        [
+            'text' => 'Type Kamar',
+            'url'  => 'admin/type-room',
+            'icon' => 'building',
         ],
         [
             'text'        => 'Pages',
