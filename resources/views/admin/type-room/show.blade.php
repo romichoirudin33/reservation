@@ -18,11 +18,15 @@
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="pull-left header"><i class="fa fa-th"></i> Detail Type Kamar</li>
+                    <li>
+                        <a href="{{ route('admin.type-room.index') }}">Lihat Semua</a>
+                    </li>
                     <li class="dropdown pull-right">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                             <span class="fa fa-gears"></span> Setting <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu text-left">
+
                             <li>
                                 <button class="btn btn-default btn-sm btn-flat btn-block"
                                         data-toggle="modal"
@@ -140,7 +144,8 @@
                                 @foreach($data->rooms as $room)
                                     <li>
                                         {{ $room->name }}
-                                        <a href="{{ route('admin.delete-room', ['id' => $room->id]) }}" class="btn btn-danger btn-xs btn-flat">
+                                        <a href="{{ route('admin.delete-room', ['id' => $room->id]) }}"
+                                           class="btn btn-danger btn-xs btn-flat">
                                             <span class="fa fa-trash"></span>
                                         </a>
                                     </li>

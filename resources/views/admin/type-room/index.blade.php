@@ -1,10 +1,10 @@
 @extends('adminlte::page')
 
-@section('title', 'Type Room')
+@section('title', 'Type Kamar')
 
 @section('content_header')
     <div style="font-size: 18px;">
-        <b>Type Room</b>
+        <b>Type Kamar</b>
     </div>
 @stop
 
@@ -33,7 +33,7 @@
                         <table class="table table-bordered table-striped">
                             <thead>
                             <tr>
-                                <th style="text-align: center">Foto</th>
+                                <th style="text-align: center" width="25%">Foto</th>
                                 <th style="text-align: center">Nama Type Room</th>
                                 <th style="text-align: center">Harga (IDR)</th>
                                 <th style="text-align: center">Aksi</th>
@@ -44,7 +44,11 @@
                             @foreach($data as $item)
                                 <tr>
                                     <td>
-
+                                        @if ($item->room_images->count() > 0)
+                                            <img src="{{ asset('room_images/'.$item->room_images->first()->name_file) }}" class="img-responsive">
+                                        @else
+                                            <img src="{{ asset('image-not-found.png') }}" alt="" class="img-responsive">
+                                        @endif
                                     </td>
                                     <td>
                                         <b>{{ $item->name }}</b> <br>
@@ -68,7 +72,7 @@
                                            title="Edit">
                                             <i class="fa fa-edit"></i>
                                         </a>&nbsp;
-                                        <a href="" class="btn btn-xs btn-danger flat"
+                                        <button class="btn btn-xs btn-danger flat"
                                            data-toggle="tooltip"
                                            data-placement="top"
                                            title="Hapus"
@@ -77,7 +81,7 @@
                                                    document.getElementById('delete-{{ $item->id }}').submit();
                                                    };">
                                             <i class="fa fa-trash"></i>
-                                        </a>
+                                        </button>
                                         <form id="delete-{{ $item->id }}"
                                               action="{{ route('admin.type-room.destroy', ['id'=>$item->id]) }}"
                                               method="post">
