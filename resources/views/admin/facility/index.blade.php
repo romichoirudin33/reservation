@@ -52,7 +52,7 @@
                                            title="Edit">
                                             <i class="fa fa-edit"></i>
                                         </a>&nbsp;
-                                        <a href="" class="btn btn-xs btn-danger flat"
+                                        <button class="btn btn-xs btn-danger flat"
                                            data-toggle="tooltip"
                                            data-placement="top"
                                            title="Hapus"
@@ -61,7 +61,7 @@
                                                    document.getElementById('delete-{{ $item->id }}').submit();
                                                    };">
                                             <i class="fa fa-trash"></i>
-                                        </a>
+                                        </button>
                                         <form id="delete-{{ $item->id }}"
                                               action="{{ route('admin.facility.destroy', ['id'=>$item->id]) }}"
                                               method="post">
