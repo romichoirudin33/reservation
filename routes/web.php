@@ -15,12 +15,26 @@ Route::get('/', function () {
     return view('guest.welcome');
 })->name('welcome');
 
+Route::get('/room', 'Guest\ReservationController@room')->name('guest.room');
+
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/home', 'HomeController@index')->name('home');
 
+    //punya guest
+    Route::get('/book', 'Guest\ReservationController@book')->name('guest.book');
+    Route::post('/book', 'Guest\ReservationController@store')->name('guest.store_book');
+    Route::get('/book/{id}/edit', 'Guest\ReservationController@edit')->name('guest.book.edit');
+    Route::put('/book/{id}', 'Guest\ReservationController@update')->name('guest.book.update');
+    Route::delete('/book/{id}', 'Guest\ReservationController@destroy')->name('guest.book.destroy');
+
+    Route::post('/book-continue', 'Guest\ReservationController@continue_payment')->name('guest.continue_payment');
+
+    Route::get('/pay', 'Guest\PaymentController@index')->name('guest.pay.index');
+
+    //punya admin
     Route::group(['prefix' => 'admin'], function () {
 
         Route::resource('facility', 'Admin\FacilityController', ['except' => [

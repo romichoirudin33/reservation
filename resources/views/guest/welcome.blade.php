@@ -50,7 +50,7 @@
                         @endforeach
                     </ul>
 
-                    <a href="" class="btn btn-outline-danger flat">Pesan Sekarang</a>
+                    <a href="{{ route('guest.room') }}" class="btn btn-outline-danger flat">Pesan Sekarang</a>
                 </div>
             </div>
             <div class="col-md-6">
