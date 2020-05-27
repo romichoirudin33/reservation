@@ -33,6 +33,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/book-continue', 'Guest\ReservationController@continue_payment')->name('guest.continue_payment');
 
     Route::get('/pay', 'Guest\PaymentController@index')->name('guest.pay.index');
+    Route::post('/pay', 'Guest\PaymentController@store')->name('guest.pay.store');
+    Route::get('/pay-edit', 'Guest\PaymentController@edit')->name('guest.pay.edit');
 
     //punya admin
     Route::group(['prefix' => 'admin'], function () {

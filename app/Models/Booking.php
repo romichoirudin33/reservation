@@ -31,4 +31,9 @@ class Booking extends Model
     {
         return $this->hasOne(Proof::class, 'bookings_id');
     }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'bookings_id');
+    }
 }

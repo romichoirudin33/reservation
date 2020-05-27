@@ -68,7 +68,6 @@ class ReservationController extends Controller
             $book->users_id = Auth::id();
             $book->status = '1';
             $book->save();
-
         } else {
             $book = Booking::where('users_id', Auth::id())
                 ->where('status', '1')

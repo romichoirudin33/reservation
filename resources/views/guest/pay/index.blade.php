@@ -78,10 +78,67 @@
                     </p>
                 </div>
                 <div class="col-6">
-
+                    <button class="btn btn-success btn-sm" onclick="cek('{{ $data->payment->snap_token }}')">Complete
+                        Payment
+                    </button>
                 </div>
             </row>
         </div>
     </div>
+@stop
 
+@section('js')
+    <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}"
+            data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
+    <script>
+        function cek(snap_token) {
+            snap.pay(snap_token, {
+                // Optional
+                onSuccess: function (result) {
+                    // location.reload();
+                    console.log(result);
+                    windows.location = '{{ route('guest.pay.edit', ['snap_token' => $data->payment->snap_token]) }}';
+                },
+                // Optional
+                onPending: function (result) {
+                    console.log(result);
+                    {{--location.reload();--}}
+                    {{--windows.location = '{{ route('guest.pay.edit', ['snap_token']) }}';--}}
+                },
+                // Optional
+                onError: function (result) {
+                    console.log(result);
+                    location.reload();
+                }
+            });
+        }
+
+        function submitForm() {
+            // Kirim request ajax
+            $.post("{{ route('guest.pay.store') }}",
+                {
+                    _method: 'POST',
+                    _token: '{{ csrf_token() }}',
+                    bookings_id: $('input#bookings_id').val()
+                },
+                function (data, status) {
+                    console.log(data);
+                    snap.pay(data.snap_token, {
+                        // Optional
+                        onSuccess: function (result) {
+                            location.reload();
+                        },
+                        // Optional
+                        onPending: function (result) {
+                            location.reload();
+                        },
+                        // Optional
+                        onError: function (result) {
+                            location.reload();
+                        }
+                    });
+                });
+            return false;
+        }
+    </script>
 @stop

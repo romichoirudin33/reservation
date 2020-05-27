@@ -27,7 +27,7 @@ class HomeController extends Controller
         if (Auth::user()->super_user == 1){
             return view('home');
         }else{
-            return redirect()->route('welcome');
+            return redirect()->route('guest.room');
         }
     }
 }

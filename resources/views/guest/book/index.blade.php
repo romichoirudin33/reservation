@@ -73,31 +73,32 @@
                 <h4>Informasi Pemesan</h4>
                 <small>Mohon di isi data pemesan berikut ini</small>
 
-                <form action="{{ route('guest.continue_payment') }}" method="post" class="mt-4">
+                <div class="mt-4">
                     {{ csrf_field() }}
+                    <input type="hidden" name="bookings_id" id="bookings_id" value="{{ $data->id }}">
                     <div class="form-group">
                         <label>Nama</label>
-                        <input type="text" name="name" class="form-control" autocomplete="off" required>
+                        <input type="text" name="name" id="name" class="form-control" autocomplete="off" required>
                     </div>
                     <div class="row form-group">
                         <div class="col-md-6">
                             <label>Phone</label>
-                            <input type="text" name="phone" class="form-control" autocomplete="off" required>
+                            <input type="text" name="phone" id="phone" class="form-control" autocomplete="off" required>
                         </div>
                         <div class="col-md-6">
                             <label>Email</label>
-                            <input type="email" name="email" class="form-control" autocomplete="off" required>
+                            <input type="email" name="email" id="email" class="form-control" autocomplete="off" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <a href="{{ route('welcome') }}" class="btn btn-secondary">
                             Batalkan <span class="fa fa-times"></span>
                         </a>
-                        <button class="btn btn-primary float-right" type="submit">
+                        <button class="btn btn-primary float-right" onclick="return submitForm();">
                             Lanjutkan ke pembayaran <span class="fa fa-arrow-right"></span>
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
             <div class="col-md-4">
                 <h4>Total Pesanan</h4>
@@ -164,48 +165,36 @@
 @stop
 
 @section('js')
-{{--    <button type="button" id="pay-button">Pay!</button>--}}
-    <!-- TODO: Remove ".sandbox" from script src URL for production environment. Also input your client key in "data-client-key" -->
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
-            data-client-key="SB-Mid-client-cDfuX7lR7eJvvFS5"></script>
-    <script type="text/javascript">
-        document.getElementById('pay-button').onclick = function () {
-// This is minimal request body as example.
-// Please refer to docs for all available options:
-// https://snap-docs.midtrans.com/#json-parameter-request-body
-// TODO: you should change this gross_amount and order_id to your desire.
-            var requestBody =
+    <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
+    <script>
+        function submitForm() {
+            // Kirim request ajax
+            $.post("{{ route('guest.pay.store') }}",
                 {
-                    transaction_details: {
-                        gross_amount: 123000,
-                        // as example we use timestamp as order ID
-                        order_id: 'T-' + Math.round((new Date()).getTime() / 1000)
-                    },
-                    credit_card: {
-                        secure: true
-                    }
-                }
-
-            getSnapToken(requestBody, function (response) {
-                var response = JSON.parse(response);
-                snap.pay(response.token);
-            })
-        };
-
-        /**
-         * Send AJAX POST request to checkout.php, then call callback with the API response
-         * @param {object} requestBody: request body to be sent to SNAP API
-         * @param {function} callback: callback function to pass the response
-         */
-        function getSnapToken(requestBody, callback) {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                    callback(xmlHttp.responseText);
-                }
-            }
-            xmlHttp.open("post", "{{ route('welcome') }}");
-            xmlHttp.send(JSON.stringify(requestBody));
+                    _method: 'POST',
+                    _token: '{{ csrf_token() }}',
+                    bookings_id: $('input#bookings_id').val(),
+                    name: $('input#name').val(),
+                    email: $('input#email').val(),
+                    phone: $('input#phone').val()
+                },
+                function (data, status) {
+                    snap.pay(data.snap_token, {
+                        // Optional
+                        onSuccess: function (result) {
+                            location.reload();
+                        },
+                        // Optional
+                        onPending: function (result) {
+                            location.reload();
+                        },
+                        // Optional
+                        onError: function (result) {
+                            location.reload();
+                        }
+                    });
+                });
+            return false;
         }
     </script>
 @stop
