@@ -115,6 +115,9 @@
             <!-- Main content -->
             <section class="content">
 
+                <div id="notification-booking"></div>
+                <div id="notification-payment"></div>
+
                 @yield('content')
 
             </section>
@@ -131,6 +134,28 @@
 @stop
 
 @section('adminlte_js')
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+
+        socket.on('getBooking', (data) => {
+            var notif = "<div class='alert alert-warning alert-dismissable'>\n" +
+                "            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>\n" +
+                "            <h4><i class='icon fa fa-info'></i> Pemesanan Baru !</h4>\n" + data.data + " <a href='/admin/new-booking'>Lihat</a>" +
+                "        </div>";
+            document.getElementById('notification-booking').innerHTML = notif;
+        });
+        socket.on('getPayment', (data) => {
+            var notif = "<div class='alert alert-info alert-dismissable'>\n" +
+                "            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>\n" +
+                "            <h4><i class='icon fa fa-info'></i> Pembayaran Baru !</h4>\n" + data.data + " <a href='/admin/booking'>Lihat</a>" +
+                "        </div>";
+            document.getElementById('notification-payment').innerHTML = notif;
+        });
+
+    </script>
+
     <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
     @stack('js')
     @yield('js')

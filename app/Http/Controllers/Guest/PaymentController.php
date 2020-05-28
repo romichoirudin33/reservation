@@ -35,9 +35,8 @@ class PaymentController extends Controller
         if (count($data) > 0){
             return view('guest.pay.index')
                 ->with('data', $data);
-        }else{
-            abort(404);
         }
+        return 'anda tidak memiliki data pembayaran';
     }
 
     public function store(Request $request)
@@ -46,7 +45,7 @@ class PaymentController extends Controller
             $booking = Booking::where('id', $this->request->bookings_id)->first();
             $total_price = $booking->detail_bookings->sum('price');
             $booking->total_price = $total_price;
-//            $booking->status = '2';
+            $booking->status = '2';
             $booking->name = $this->request->name;
             $booking->phone = $this->request->phone;
             $booking->email = $this->request->email;

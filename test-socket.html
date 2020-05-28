@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button onclick="clickMe()">Pemesanan</button>
+<button onclick="clickMe2()">Pembayaran</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script>
+    const socket = io('http://localhost:3000');
+
+    //listen socket
+    socket.on('getBooking', (data) => {
+        console.log(data);
+    });
+    socket.on('getPayment', (data) => {
+        console.log(data);
+    });
+
+    //event to emit or push socket
+    function clickMe() {
+        socket.emit('booking', { data: 'booking baru' });
+    }
+    function clickMe2() {
+        socket.emit('payment', { data: 'pembayaran baru' });
+    }
+</script>
+</body>
+</html>

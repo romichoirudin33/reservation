@@ -13,48 +13,48 @@
                 <h4><b>Room Booking</b></h4>
                 <small>Silahkan di cek kembali pesanan kamar anda</small>
                 @if($data->detail_bookings->count() > 0)
-                @foreach($data->detail_bookings as $detail)
-                    <div class="row border p-2 mt-2 mb-2">
-                        <div class="col-md-6">
-                            <h5 class="mb-3">{{ $detail->type_room->name }} - {{ $detail->room->name }}</h5>
+                    @foreach($data->detail_bookings as $detail)
+                        <div class="row border p-2 mt-2 mb-2">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">{{ $detail->type_room->name }} - {{ $detail->room->name }}</h5>
 
-                            <table style="width: 80%">
-                                <tr>
-                                    <th>Check In</th>
-                                    <th>Check Out</th>
-                                    <th>Night</th>
-                                </tr>
-                                <tr>
-                                    <td>{{ date('m/d/Y', strtotime($detail->check_in))  }}</td>
-                                    <td>{{ date('m/d/Y', strtotime($detail->check_out))  }}</td>
-                                    <td>{{ $detail->night }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="float-right">
-                                <a href="{{ route('guest.book.edit', ['id' => $detail->id]) }}"
-                                   class="btn btn-outline-primary btn-sm flat">
-                                    <span class="fa fa-edit"></span> Edit
-                                </a>
-                                <button class="btn btn-outline-danger btn-sm flat"
-                                        onclick="if (confirm('Anda yakin akan menghapus data ini ?')){
-                                                event.preventDefault();
-                                                document.getElementById('delete-{{ $detail->id }}').submit();
-                                                };">
-                                    <span class="fa fa-trash"></span> Hapus
-                                </button>
-                                <form id="delete-{{ $detail->id }}"
-                                      action="{{ route('guest.book.destroy', ['id'=>$detail->id]) }}"
-                                      method="post">
-                                    {{ method_field('DELETE') }}
-                                    {{ csrf_field() }}
-                                </form>
+                                <table style="width: 80%">
+                                    <tr>
+                                        <th>Check In</th>
+                                        <th>Check Out</th>
+                                        <th>Night</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ date('m/d/Y', strtotime($detail->check_in))  }}</td>
+                                        <td>{{ date('m/d/Y', strtotime($detail->check_out))  }}</td>
+                                        <td>{{ $detail->night }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="float-right">
+                                    <a href="{{ route('guest.book.edit', ['id' => $detail->id]) }}"
+                                       class="btn btn-outline-primary btn-sm flat">
+                                        <span class="fa fa-edit"></span> Edit
+                                    </a>
+                                    <button class="btn btn-outline-danger btn-sm flat"
+                                            onclick="if (confirm('Anda yakin akan menghapus data ini ?')){
+                                                    event.preventDefault();
+                                                    document.getElementById('delete-{{ $detail->id }}').submit();
+                                                    };">
+                                        <span class="fa fa-trash"></span> Hapus
+                                    </button>
+                                    <form id="delete-{{ $detail->id }}"
+                                          action="{{ route('guest.book.destroy', ['id'=>$detail->id]) }}"
+                                          method="post">
+                                        {{ method_field('DELETE') }}
+                                        {{ csrf_field() }}
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-                    @else
+                    @endforeach
+                @else
                     <div class="alert alert-secondary">
                         <p>
                             Anda tidak memiliki pemesanan !
@@ -87,7 +87,8 @@
                         </div>
                         <div class="col-md-6">
                             <label>Email</label>
-                            <input type="email" name="email" id="email" class="form-control" autocomplete="off" required>
+                            <input type="email" name="email" id="email" class="form-control" autocomplete="off"
+                                   required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -106,7 +107,7 @@
                 <div class="card mt-4">
                     <div class="card-body">
                         @php
-                        $sub_total = 0;
+                            $sub_total = 0;
                         @endphp
                         @foreach($data->detail_bookings as $detail)
                             @php
@@ -165,35 +166,44 @@
 @stop
 
 @section('js')
-    <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}"
+            data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
     <script>
+        const socket = io('http://localhost:3000');
+
         function submitForm() {
-            // Kirim request ajax
-            $.post("{{ route('guest.pay.store') }}",
-                {
-                    _method: 'POST',
-                    _token: '{{ csrf_token() }}',
-                    bookings_id: $('input#bookings_id').val(),
-                    name: $('input#name').val(),
-                    email: $('input#email').val(),
-                    phone: $('input#phone').val()
-                },
-                function (data, status) {
-                    snap.pay(data.snap_token, {
-                        // Optional
-                        onSuccess: function (result) {
-                            location.reload();
-                        },
-                        // Optional
-                        onPending: function (result) {
-                            location.reload();
-                        },
-                        // Optional
-                        onError: function (result) {
-                            location.reload();
-                        }
+            var konfirm = confirm("Anda yakin akan melanjutkan ke pembayaran");
+            if (konfirm) {
+                var string = 'Terjadi pemesanan baru dengan kode booking {{ $data->code_booking }}';
+                socket.emit('booking', {data: string});
+                // Kirim request ajax
+                $.post("{{ route('guest.pay.store') }}",
+                    {
+                        _method: 'POST',
+                        _token: '{{ csrf_token() }}',
+                        bookings_id: $('input#bookings_id').val(),
+                        name: $('input#name').val(),
+                        email: $('input#email').val(),
+                        phone: $('input#phone').val()
+                    },
+                    function (data, status) {
+                        snap.pay(data.snap_token, {
+                            // Optional
+                            onSuccess: function (result) {
+                                location.reload();
+                            },
+                            // Optional
+                            onPending: function (result) {
+                                location.reload();
+                            },
+                            // Optional
+                            onError: function (result) {
+                                location.reload();
+                            }
+                        });
                     });
-                });
+            }
             return false;
         }
     </script>

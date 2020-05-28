@@ -88,10 +88,15 @@
 @stop
 
 @section('js')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}"
             data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
     <script>
+        const socket = io('http://localhost:3000');
+
         function cek(snap_token) {
+            var string = 'pembayaran kode booking {{ $data->code_booking }} berhasil di kirim';
+            socket.emit('payment', { data: string });
             snap.pay(snap_token, {
                 // Optional
                 onSuccess: function (result) {
@@ -115,6 +120,7 @@
 
         function submitForm() {
             // Kirim request ajax
+
             $.post("{{ route('guest.pay.store') }}",
                 {
                     _method: 'POST',
